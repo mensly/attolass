@@ -14,3 +14,14 @@ PROGMEM const level_t res_level_concept[] = {
   0
 };
 
+PROGMEM const uint8_t res_sprite_attolass_stand_data[] = {
+  0b00011000,
+  0b00001110,
+  0b10101111,
+  0b11110011,
+  0b01100101,
+  0b11110001,
+  0b10010101,
+  0b00001110
+};
+

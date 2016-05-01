@@ -17,10 +17,11 @@ const coord_t SCREEN_HEIGHT = 64;
 
 Arduboy arduboy;
 const level_t* level;
+coord_t playerX = (SCREEN_WIDTH - res_sprite_attolass_stand_width) / 2;
+coord_t playerY = SCREEN_HEIGHT / 2;
 
 void drawLevel() {
   // TODO: Allow a pixel offset
-  arduboy.clear();
   const level_t* pointer = level;
   level_t current = pgm_read_byte_near(pointer);
   coord_t x,y,width,height;
@@ -51,7 +52,10 @@ void drawLevel() {
     }
     x += width;
   } while (current != 0 && x < SCREEN_WIDTH);
-  arduboy.display();
+}
+
+void drawPlayer() {
+  arduboy.drawBitmap(playerX, playerY, SPRITE(attolass_stand), BLACK);
 }
 
 void setup() {
@@ -68,9 +72,13 @@ void loop() {
   // pause render until it's time for the next frame
   if (!(arduboy.nextFrame()))
     return;
+  arduboy.clear();
   // Draw platforms of level
   drawLevel();
+  // Character sprite
+  drawPlayer();
   // TODO: Allow scrolling level offset and redrawing
-  // TODO: Add character
+  // TODO: Allow character to move around and animate
+  arduboy.display();
 }
 
