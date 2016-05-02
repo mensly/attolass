@@ -25,3 +25,14 @@ PROGMEM const uint8_t res_sprite_attolass_stand_data[] = {
   0b00001110
 };
 
+PROGMEM const uint8_t res_sprite_attolass_jump_data[] = {
+  0b00100000,
+  0b00011100,
+  0b01001110,
+  0b11110001,
+  0b01100011,
+  0b11101001,
+  0b00010011,
+  0b00001110
+};
+

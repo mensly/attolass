@@ -14,3 +14,4 @@
 
 typedef uint8_t level_t;
 typedef uint8_t coord_t;
+typedef uint32_t position_t;

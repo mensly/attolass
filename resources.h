@@ -11,3 +11,7 @@ extern const level_t res_level_concept[];
 #define res_sprite_attolass_stand_height 8
 extern const uint8_t res_sprite_attolass_stand_data[];
 
+#define res_sprite_attolass_jump_width 8
+#define res_sprite_attolass_jump_height 8
+extern const uint8_t res_sprite_attolass_jump_data[];
+
