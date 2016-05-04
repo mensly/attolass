@@ -23,7 +23,10 @@
 
 #define PGM_INCREMENT(pointer, value) pointer++; value = pgm_read_byte_near(pointer);
 
-const coord_t PLAYER_POSITION_CENTER = (SCREEN_WIDTH - res_sprite_attolass_stand_left_width) / 2;
+const uint8_t CHARACTER_SIZE = 8;
+#define MAX_Y_VELOCITY 6
+#define APPLY_Y_VELOCITY (-MAX_Y_VELOCITY)
+const coord_t PLAYER_POSITION_CENTER = (SCREEN_WIDTH - CHARACTER_SIZE) / 2;
 
 const level_t* levelStart;      // Pointer to the start of the current level's data
 const level_t* level;           // Pointer to the first section to display in the current level
@@ -31,14 +34,80 @@ position_t levelPosition;       // Overall position of scroll through the curren
 uint8_t sectionOffset;          // Offset between the levelPosition and start of the position of the first section
 position_t playerX = PLAYER_POSITION_CENTER;
 position_t playerY = SCREEN_HEIGHT / 2;
+int8_t yVelocity = 0;
+bool prevJumping = false;           // Previous frame was a jump
 bool jumping = false;           // Currently in a jump
 bool moving = false;            // Currently moving left/right
 const uint8_t FPS = 30;         // FPS to run game at
 uint8_t frame = 0;              // Frame number that loops back to 0 when it reaches FPS
 bool flipSprite = false;        // Track facing (false=left, true=right)
+const uint8_t HOVER_COUNT = 5;
+uint8_t hover = 0;
+
+typedef enum {
+    DirectionUp, DirectionDown, DirectionLeft, DirectionRight
+} direction_t;
+
+bool isAnyPixel(coord_t x, coord_t y, coord_t width, coord_t height, uint8_t color) {
+    coord_t maxX = x + width;
+    coord_t maxY = y + height;
+    for (int i = x; i < maxX; i++) {
+        for (int j = y; j < maxY; j++) {
+            if (arduboy.getPixel(i, j) == color) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool canMove(direction_t direction) {
+    switch (direction) {
+        case DirectionUp:
+            return !isAnyPixel(playerX - levelPosition, playerY - 1, CHARACTER_SIZE, 1, BLACK);
+        case DirectionDown:
+            return !isAnyPixel(playerX - levelPosition, playerY + CHARACTER_SIZE, CHARACTER_SIZE, 1, BLACK);
+        case DirectionRight:
+            return !isAnyPixel(playerX - levelPosition + CHARACTER_SIZE, playerY, 1, CHARACTER_SIZE, BLACK);
+        case DirectionLeft:
+            return !isAnyPixel(playerX - levelPosition - 1, playerY, 1, CHARACTER_SIZE, BLACK);
+        default:
+            return false;
+    }
+    // Can fall if there are no black pixels below the character
+}
+
+void applyVelocity() {
+    if (yVelocity < 0) {
+        if (jumping) {
+            for (uint8_t i = -yVelocity; i > 0; i--) {
+                if (!canMove(DirectionUp)) {
+                    yVelocity = 0;
+                    hover = 0;
+                    break;
+                }
+                playerY--;
+            }
+        }
+        else {
+            yVelocity = 0;
+        }
+    }
+    else {
+        for (uint8_t i = 0; i < yVelocity; i++) {
+            if (!canMove(DirectionDown)) {
+                yVelocity = 0;
+                hover = 0;
+                break;
+            }
+            playerY++;
+        }
+    }
+}
 
 void updatePlayer() {
-    if (arduboy.pressed(LEFT_BUTTON)) {
+    prevJumping = jumping;
+    if (arduboy.pressed(LEFT_BUTTON) && canMove(DirectionLeft)) {
         if (levelPosition > 0) {
             levelPosition--;
         }
@@ -49,7 +118,7 @@ void updatePlayer() {
         flipSprite = true;
         // TODO: Update level pointer and sectionOffset
     }
-    else if (arduboy.pressed(RIGHT_BUTTON)) {
+    else if (arduboy.pressed(RIGHT_BUTTON) && canMove(DirectionRight)) {
         playerX++;
         if (playerX >= PLAYER_POSITION_CENTER) {
             levelPosition++;
@@ -61,7 +130,32 @@ void updatePlayer() {
     else {
         moving = false;
     }
+    // Calculate y velocity based on jump button
     jumping = arduboy.pressed(A_BUTTON);
+    if (canMove(DirectionDown)) {
+        if (yVelocity == 0 && hover > 0) {
+            hover--;
+        }
+        else {
+            yVelocity++;
+            if (yVelocity > MAX_Y_VELOCITY) {
+                yVelocity--;
+            }
+        }
+    }
+    else {
+        if (jumping && !prevJumping) {
+            hover = HOVER_COUNT;
+            yVelocity = APPLY_Y_VELOCITY;
+        }
+        else {
+            yVelocity = 0;
+            hover = 0;
+        }
+
+    }
+    // Apply y velocity based on nearby blocks
+    applyVelocity();
 }
 
 void drawLevel() {
@@ -100,12 +194,12 @@ void drawLevel() {
 
 void drawPlayer() {
     position_t drawPlayerX = playerX - levelPosition;
-    if (jumping) {
+    if (jumping || yVelocity != 0) {
         if (flipSprite) {
-            arduboy.drawBitmap(drawPlayerX, playerY - 10, SPRITE(attolass_jump_left), BLACK);
+            arduboy.drawBitmap(drawPlayerX, playerY, SPRITE(attolass_jump_left), BLACK);
         }
         else {
-            arduboy.drawBitmap(drawPlayerX, playerY - 10, SPRITE(attolass_jump_right), BLACK);
+            arduboy.drawBitmap(drawPlayerX, playerY, SPRITE(attolass_jump_right), BLACK);
         }
     }
     else if (!moving) {

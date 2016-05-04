@@ -127,7 +127,7 @@ void Mockboy::drawPixel(int x, int y, uint8_t color) {
 uint8_t Mockboy::getPixel(uint8_t x, uint8_t y) {
     int bpp = surface->format->BytesPerPixel;
     /* Here p is the address to the pixel we want to retrieve */
-    Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch + x * bpp;
+    Uint8 *p = (Uint8 *)surface->pixels + (y * MOCK_SCALE) * surface->pitch + (x * MOCK_SCALE) * bpp;
     Uint32 pixel = 0;
     switch(bpp) {
         case 1:
@@ -142,6 +142,7 @@ uint8_t Mockboy::getPixel(uint8_t x, uint8_t y) {
         case 4:
             pixel = *(Uint32 *)p;
     }
+//    printf("bpp=%d\tpixel=%08x", bpp, pixel);
     return pixel == 0 ? BLACK : WHITE;
 }
 
