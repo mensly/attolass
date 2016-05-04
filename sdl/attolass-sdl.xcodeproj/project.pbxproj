@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3188079E1CDA03B900605168 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3188079D1CDA03B900605168 /* main.cpp */; };
+		3169D3F21CDAC0400043450A /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3188079D1CDA03B900605168 /* main.cpp */; };
 		318807A61CDA03E500605168 /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 318807A41CDA03E500605168 /* SDL2_image.framework */; };
 		318807A71CDA03E500605168 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 318807A51CDA03E500605168 /* SDL2.framework */; };
 		318807AA1CDA041800605168 /* Mockboy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 318807A81CDA041800605168 /* Mockboy.cpp */; };
@@ -29,7 +29,7 @@
 
 /* Begin PBXFileReference section */
 		3188079A1CDA03B900605168 /* attolass-sdl */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "attolass-sdl"; sourceTree = BUILT_PRODUCTS_DIR; };
-		3188079D1CDA03B900605168 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../main.cpp; sourceTree = "<group>"; };
+		3188079D1CDA03B900605168 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		318807A41CDA03E500605168 /* SDL2_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_image.framework; path = /Library/Frameworks/SDL2_image.framework; sourceTree = "<absolute>"; };
 		318807A51CDA03E500605168 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = /Library/Frameworks/SDL2.framework; sourceTree = "<absolute>"; };
 		318807A81CDA041800605168 /* Mockboy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mockboy.cpp; sourceTree = SOURCE_ROOT; };
@@ -79,7 +79,7 @@
 				318807A81CDA041800605168 /* Mockboy.cpp */,
 				318807A91CDA041800605168 /* Mockboy.h */,
 			);
-			path = "attolass-sdl";
+			name = "attolass-sdl";
 			sourceTree = "<group>";
 		};
 		318807AB1CDA049000605168 /* attolass */ = {
@@ -168,7 +168,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = /Users/mensly/Projects/arduboy/attolass/process_resources.py;
+			shellScript = ../process_resources.py;
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -180,7 +180,7 @@
 				318807AA1CDA041800605168 /* Mockboy.cpp in Sources */,
 				318807B11CDA04A500605168 /* attolass.ino in Sources */,
 				318807B01CDA049900605168 /* resources.c in Sources */,
-				3188079E1CDA03B900605168 /* main.cpp in Sources */,
+				3169D3F21CDAC0400043450A /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
