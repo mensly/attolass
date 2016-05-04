@@ -32,24 +32,30 @@ HEADER_TEMPLATE = """extern const uint8_t res_sprite_{0}_data[];
 #define res_sprite_{0}_height 8
 """
 # Process res/sprite/*.png into C code
-def create_sprite(name, file):
+def create_sprite(name, file, flip=False):
     (width, height, pixels, metadata) = png.Reader(filename=file).asRGBA8()
     data = [item for sublist in pixels for item in sublist][3::4]
     resource = "PROGMEM const uint8_t res_sprite_{0}_data[] = ".format(name) + "{"
+    data_lines = []
     for x in xrange(width):
-        resource += "\n    0b"
+        line = "\n    0b"
         bits = 0
         for y in xrange(height - 1, -1, -1):
             if bits == 8:
-                resource += ", 0b"
+                line += ", 0b"
                 bits = 0
             if data[y * width + x]:
-                resource += "1"
+                line += "1"
             else:
-                resource += "0"
+                line += "0"
             bits += 1
-        resource += ("0" * (8 - bits))
-        resource += ", "
+        line += ("0" * (8 - bits))
+        line += ", "
+        data_lines += (line,)
+    if flip:
+        data_lines = reversed(data_lines)
+    for line in data_lines:
+        resource += line
     resource += "\n};\n"
     return resource
 
@@ -61,6 +67,10 @@ for sprite_file in os.listdir(sprite_dir):
         sprite_name = os.path.splitext(sprite_file)[0]
         sprite_header += HEADER_TEMPLATE.format(sprite_name) + "\n"
         sprite_data += create_sprite(sprite_name, os.path.join(sprite_dir, sprite_file)) + "\n"
+        if sprite_name.endswith('right'):
+            sprite_name = sprite_name.replace('right', 'left')
+            sprite_header += HEADER_TEMPLATE.format(sprite_name) + "\n"
+            sprite_data += create_sprite(sprite_name, os.path.join(sprite_dir, sprite_file), True) + "\n"
 
 replace_region('resources.h', 'res_sprite', sprite_header)
 replace_region('resources.c', 'res_sprite', sprite_data)

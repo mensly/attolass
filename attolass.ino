@@ -23,7 +23,7 @@
 
 #define PGM_INCREMENT(pointer, value) pointer++; value = pgm_read_byte_near(pointer);
 
-const coord_t PLAYER_POSITION_CENTER = (SCREEN_WIDTH - res_sprite_attolass_stand_width) / 2;
+const coord_t PLAYER_POSITION_CENTER = (SCREEN_WIDTH - res_sprite_attolass_stand_left_width) / 2;
 
 const level_t* levelStart;      // Pointer to the start of the current level's data
 const level_t* level;           // Pointer to the first section to display in the current level
@@ -33,8 +33,9 @@ position_t playerX = PLAYER_POSITION_CENTER;
 position_t playerY = SCREEN_HEIGHT / 2;
 bool jumping = false;           // Currently in a jump
 bool moving = false;            // Currently moving left/right
-const uint8_t FPS = 30;
+const uint8_t FPS = 30;         // FPS to run game at
 uint8_t frame = 0;              // Frame number that loops back to 0 when it reaches FPS
+bool flipSprite = false;        // Track facing (false=left, true=right)
 
 void updatePlayer() {
     if (arduboy.pressed(LEFT_BUTTON)) {
@@ -45,6 +46,7 @@ void updatePlayer() {
             playerX--;
         }
         moving = true;
+        flipSprite = true;
         // TODO: Update level pointer and sectionOffset
     }
     else if (arduboy.pressed(RIGHT_BUTTON)) {
@@ -53,6 +55,7 @@ void updatePlayer() {
             levelPosition++;
         }
         moving = true;
+        flipSprite = false;
         // TODO: Update level pointer and sectionOffset
     }
     else {
@@ -98,16 +101,36 @@ void drawLevel() {
 void drawPlayer() {
     position_t drawPlayerX = playerX - levelPosition;
     if (jumping) {
-        arduboy.drawBitmap(drawPlayerX, playerY - 10, SPRITE(attolass_jump), BLACK);
+        if (flipSprite) {
+            arduboy.drawBitmap(drawPlayerX, playerY - 10, SPRITE(attolass_jump_left), BLACK);
+        }
+        else {
+            arduboy.drawBitmap(drawPlayerX, playerY - 10, SPRITE(attolass_jump_right), BLACK);
+        }
     }
     else if (!moving) {
-        arduboy.drawBitmap(drawPlayerX, playerY, SPRITE(attolass_stand), BLACK);
+        if (flipSprite) {
+            arduboy.drawBitmap(drawPlayerX, playerY, SPRITE(attolass_stand_left), BLACK);
+        }
+        else {
+            arduboy.drawBitmap(drawPlayerX, playerY, SPRITE(attolass_stand_right), BLACK);
+        }
     }
     else if ((frame % 6) < 3) {
-        arduboy.drawBitmap(drawPlayerX, playerY, SPRITE(attolass_walk_1), BLACK);
+        if (flipSprite) {
+            arduboy.drawBitmap(drawPlayerX, playerY, SPRITE(attolass_walk_1_left), BLACK);
+        }
+        else {
+            arduboy.drawBitmap(drawPlayerX, playerY, SPRITE(attolass_walk_1_right), BLACK);
+        }
     }
     else {
-        arduboy.drawBitmap(drawPlayerX, playerY, SPRITE(attolass_walk_2), BLACK);
+        if (flipSprite) {
+            arduboy.drawBitmap(drawPlayerX, playerY, SPRITE(attolass_walk_2_left), BLACK);
+        }
+        else {
+            arduboy.drawBitmap(drawPlayerX, playerY, SPRITE(attolass_walk_2_right), BLACK);
+        }
     }
 }
 
