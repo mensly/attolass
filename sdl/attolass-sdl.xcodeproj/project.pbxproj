@@ -111,6 +111,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 318807A11CDA03B900605168 /* Build configuration list for PBXNativeTarget "attolass-sdl" */;
 			buildPhases = (
+				318807B41CDA3BBA00605168 /* ShellScript */,
 				318807961CDA03B900605168 /* Sources */,
 				318807971CDA03B900605168 /* Frameworks */,
 				318807981CDA03B900605168 /* CopyFiles */,
@@ -154,6 +155,22 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		318807B41CDA3BBA00605168 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = /Users/mensly/Projects/arduboy/attolass/process_resources.py;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		318807961CDA03B900605168 /* Sources */ = {

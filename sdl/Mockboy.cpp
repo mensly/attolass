@@ -32,7 +32,8 @@ bool Mockboy::initSDL() {
         }
         else {
             //Create renderer for window
-            renderer = SDL_CreateRenderer( window, -1, SDL_RENDERER_ACCELERATED );
+            surface = SDL_GetWindowSurface(window);
+            renderer = SDL_CreateSoftwareRenderer(surface);
             if (renderer == NULL) {
                 printf("Renderer could not be created! SDL Error: %s\n", SDL_GetError());
                 success = false;
@@ -123,6 +124,27 @@ void Mockboy::drawPixel(int x, int y, uint8_t color) {
     fillRect(x, y, 1, 1, color);
 }
 
+uint8_t Mockboy::getPixel(uint8_t x, uint8_t y) {
+    int bpp = surface->format->BytesPerPixel;
+    /* Here p is the address to the pixel we want to retrieve */
+    Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch + x * bpp;
+    Uint32 pixel = 0;
+    switch(bpp) {
+        case 1:
+            pixel = *p;
+        case 2:
+            pixel = *(Uint16 *)p;
+        case 3:
+            if(SDL_BYTEORDER == SDL_BIG_ENDIAN)
+                pixel = p[0] << 16 | p[1] << 8 | p[2];
+            else
+                pixel = p[0] | p[1] << 8 | p[2] << 16;
+        case 4:
+            pixel = *(Uint32 *)p;
+    }
+    return pixel == 0 ? BLACK : WHITE;
+}
+
 /// Draws a bitmap from program memory to a specific X/Y
 void Mockboy::drawBitmap(int16_t x, int16_t y, const uint8_t *bitmap, uint8_t w, uint8_t h, uint8_t color) {
     // TODO: More efficient implementation
@@ -160,5 +182,6 @@ bool Mockboy::nextFrame() {
 /// Copies the contents of the screen buffer to the screen.
 void Mockboy::display() {
     SDL_RenderPresent(renderer);
+    SDL_UpdateWindowSurface(window);
 }
 #endif

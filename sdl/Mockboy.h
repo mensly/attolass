@@ -42,6 +42,8 @@ public:
     /// Sets a single pixel on the screen buffer to white or black.
     void drawPixel(int x, int y, uint8_t color);
 
+    uint8_t getPixel(uint8_t x, uint8_t y);
+
     /// Draws a bitmap from program memory to a specific X/Y
     void drawBitmap(int16_t x, int16_t y, const uint8_t *bitmap, uint8_t w, uint8_t h, uint8_t color);
 
@@ -59,6 +61,7 @@ public:
     
 private:
     SDL_Window* window;
+    SDL_Surface* surface;
     SDL_Renderer* renderer;
     uint8_t buttonsState;
     uint8_t getKeyFlag(SDL_Keycode sdlKeyCode);
