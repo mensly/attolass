@@ -1,5 +1,10 @@
 #pragma once
 #include <inttypes.h>
+#include <chrono>
+#include <SDL2/SDL.h>
+#include <SDL2_image/SDL_image.h>
+
+#define MOCK_SCALE 5
 
 #define BLACK 0 //< unlit pixel
 #define WHITE 1 //< lit pixel
@@ -21,8 +26,11 @@ public:
 
     /// Returns true if the button mask passed in is pressed.
     bool pressed(uint8_t buttons);
+    
+    // Initialize SDL window
+    bool initSDL();
 
-    /// Initialize hardware, boot logo, boot utilities, etc.
+    // Placeholder for Arbuboy's setup
     void begin();
 
     /// Clears display.
@@ -30,6 +38,9 @@ public:
 
     /// Draws a filled-in rectangle.
     void fillRect(int16_t x, int16_t y, uint8_t w, uint8_t h, uint8_t color);
+
+    /// Sets a single pixel on the screen buffer to white or black.
+    void drawPixel(int x, int y, uint8_t color);
 
     /// Draws a bitmap from program memory to a specific X/Y
     void drawBitmap(int16_t x, int16_t y, const uint8_t *bitmap, uint8_t w, uint8_t h, uint8_t color);
@@ -39,4 +50,24 @@ public:
 
     /// Copies the contents of the screen buffer to the screen.
     void display();
+    
+    //Free resources and close SDL
+    void close();
+    
+    void onKeyDown(SDL_Keycode sdlKeyCode);
+    void onKeyUp(SDL_Keycode sdlKeyCode);
+    
+private:
+    SDL_Window* window;
+    SDL_Renderer* renderer;
+    uint8_t buttonsState;
+    uint8_t getKeyFlag(SDL_Keycode sdlKeyCode);
+    void setDrawColor(uint8_t color);
+    
+    time_t millis();
+    
+    uint8_t frameRate;
+    uint8_t eachFrameMillis;
+    time_t nextFrameStart;
+    std::chrono::high_resolution_clock::time_point startTime;
 };
