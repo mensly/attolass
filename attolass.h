@@ -1,4 +1,9 @@
 #pragma once
+#define DEBUG
+
+#ifdef MOCK_SDL
+#include <inttypes.h>
+#endif
 
 // 0 in the first bit indicates the start of a section, the remaining
 // 7 bits store the length of the section from 1 to 127 (0 would be a null byte
@@ -15,3 +20,10 @@
 typedef uint8_t level_t;
 typedef uint8_t coord_t;
 typedef uint32_t position_t;
+
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+
+
+void setup();
+void loop();

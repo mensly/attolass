@@ -1,0 +1,289 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		3188079E1CDA03B900605168 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3188079D1CDA03B900605168 /* main.cpp */; };
+		318807A61CDA03E500605168 /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 318807A41CDA03E500605168 /* SDL2_image.framework */; };
+		318807A71CDA03E500605168 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 318807A51CDA03E500605168 /* SDL2.framework */; };
+		318807AA1CDA041800605168 /* Mockboy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 318807A81CDA041800605168 /* Mockboy.cpp */; };
+		318807B01CDA049900605168 /* resources.c in Sources */ = {isa = PBXBuildFile; fileRef = 318807AE1CDA049900605168 /* resources.c */; };
+		318807B11CDA04A500605168 /* attolass.ino in Sources */ = {isa = PBXBuildFile; fileRef = 318807AD1CDA049900605168 /* attolass.ino */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		318807981CDA03B900605168 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		3188079A1CDA03B900605168 /* attolass-sdl */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "attolass-sdl"; sourceTree = BUILT_PRODUCTS_DIR; };
+		3188079D1CDA03B900605168 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../main.cpp; sourceTree = "<group>"; };
+		318807A41CDA03E500605168 /* SDL2_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_image.framework; path = ../../../../../../Library/Frameworks/SDL2_image.framework; sourceTree = "<group>"; };
+		318807A51CDA03E500605168 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../../../../../Library/Frameworks/SDL2.framework; sourceTree = "<group>"; };
+		318807A81CDA041800605168 /* Mockboy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mockboy.cpp; sourceTree = SOURCE_ROOT; };
+		318807A91CDA041800605168 /* Mockboy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mockboy.h; sourceTree = SOURCE_ROOT; };
+		318807AC1CDA049900605168 /* attolass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = attolass.h; path = ../attolass.h; sourceTree = "<group>"; };
+		318807AD1CDA049900605168 /* attolass.ino */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = attolass.ino; path = ../attolass.ino; sourceTree = "<group>"; };
+		318807AE1CDA049900605168 /* resources.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = resources.c; path = ../resources.c; sourceTree = "<group>"; };
+		318807AF1CDA049900605168 /* resources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = resources.h; path = ../resources.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		318807971CDA03B900605168 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				318807A61CDA03E500605168 /* SDL2_image.framework in Frameworks */,
+				318807A71CDA03E500605168 /* SDL2.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		318807911CDA03B900605168 = {
+			isa = PBXGroup;
+			children = (
+				318807AB1CDA049000605168 /* attolass */,
+				318807A41CDA03E500605168 /* SDL2_image.framework */,
+				318807A51CDA03E500605168 /* SDL2.framework */,
+				3188079C1CDA03B900605168 /* attolass-sdl */,
+				3188079B1CDA03B900605168 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		3188079B1CDA03B900605168 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3188079A1CDA03B900605168 /* attolass-sdl */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3188079C1CDA03B900605168 /* attolass-sdl */ = {
+			isa = PBXGroup;
+			children = (
+				3188079D1CDA03B900605168 /* main.cpp */,
+				318807A81CDA041800605168 /* Mockboy.cpp */,
+				318807A91CDA041800605168 /* Mockboy.h */,
+			);
+			path = "attolass-sdl";
+			sourceTree = "<group>";
+		};
+		318807AB1CDA049000605168 /* attolass */ = {
+			isa = PBXGroup;
+			children = (
+				318807AC1CDA049900605168 /* attolass.h */,
+				318807AD1CDA049900605168 /* attolass.ino */,
+				318807AE1CDA049900605168 /* resources.c */,
+				318807AF1CDA049900605168 /* resources.h */,
+			);
+			name = attolass;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		318807991CDA03B900605168 /* attolass-sdl */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 318807A11CDA03B900605168 /* Build configuration list for PBXNativeTarget "attolass-sdl" */;
+			buildPhases = (
+				318807961CDA03B900605168 /* Sources */,
+				318807971CDA03B900605168 /* Frameworks */,
+				318807981CDA03B900605168 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "attolass-sdl";
+			productName = "attolass-sdl";
+			productReference = 3188079A1CDA03B900605168 /* attolass-sdl */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		318807921CDA03B900605168 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0720;
+				ORGANIZATIONNAME = Mensly;
+				TargetAttributes = {
+					318807991CDA03B900605168 = {
+						CreatedOnToolsVersion = 7.2.1;
+					};
+				};
+			};
+			buildConfigurationList = 318807951CDA03B900605168 /* Build configuration list for PBXProject "attolass-sdl" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 318807911CDA03B900605168;
+			productRefGroup = 3188079B1CDA03B900605168 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				318807991CDA03B900605168 /* attolass-sdl */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		318807961CDA03B900605168 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				318807AA1CDA041800605168 /* Mockboy.cpp in Sources */,
+				318807B11CDA04A500605168 /* attolass.ino in Sources */,
+				318807B01CDA049900605168 /* resources.c in Sources */,
+				3188079E1CDA03B900605168 /* main.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		3188079F1CDA03B900605168 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		318807A01CDA03B900605168 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		318807A21CDA03B900605168 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LOCAL_LIBRARY_DIR)/Frameworks",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = MOCK_SDL;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		318807A31CDA03B900605168 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LOCAL_LIBRARY_DIR)/Frameworks",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = MOCK_SDL;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		318807951CDA03B900605168 /* Build configuration list for PBXProject "attolass-sdl" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3188079F1CDA03B900605168 /* Debug */,
+				318807A01CDA03B900605168 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		318807A11CDA03B900605168 /* Build configuration list for PBXNativeTarget "attolass-sdl" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				318807A21CDA03B900605168 /* Debug */,
+				318807A31CDA03B900605168 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 318807921CDA03B900605168 /* Project object */;
+}

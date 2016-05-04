@@ -1,22 +1,30 @@
-#include <Arduboy.h>
-#include "attolass_types.h"
+#include "attolass.h"
 #include "resources.h"
 
-#define DEBUG
-
-#ifdef DEBUG
- #define DEBUG_PRINT(x) Serial.println(x)
+#ifdef MOCK_SDL
+  #ifdef DEBUG
+    #include <stdio.h>
+    #define DEBUG_PRINT(x) printf(x)
+  #else
+    #define DEBUG_PRINT(x)
+  #endif
+  #include "Mockboy.h"
+  Mockboy arduboy;
 #else
- #define DEBUG_PRINT(x)
+  #ifdef DEBUG
+    #define DEBUG_PRINT(x) Serial.println(x)
+    #define START_SERIAL
+  #else
+    #define DEBUG_PRINT(x)
+  #endif
+  #include <Arduboy.h>
+  Arduboy arduboy;
 #endif
 
 #define PGM_INCREMENT(pointer, value) pointer++; value = pgm_read_byte_near(pointer);
 
-const coord_t SCREEN_WIDTH = 128;
-const coord_t SCREEN_HEIGHT = 64;
 const coord_t PLAYER_POSITION_CENTER = (SCREEN_WIDTH - res_sprite_attolass_stand_width) / 2;
 
-Arduboy arduboy;
 const level_t* levelStart;    // Pointer to the start of the current level's data
 const level_t* level;         // Pointer to the first section to display in the current level
 position_t levelPosition;     // Overall position of scroll through the current level
@@ -89,13 +97,22 @@ void drawPlayer() {
 }
 
 void setup() {
-#ifdef DEBUG
+#ifdef START_SERIAL
   Serial.begin(9600);
 #endif
   arduboy.begin();
   arduboy.setFrameRate(30);
 
   level = levelStart = res_level_concept;
+}
+
+void draw() {
+    arduboy.clear();
+    // Draw platforms of level
+    drawLevel();
+    // Character sprite
+    drawPlayer();
+    arduboy.display();
 }
 
 void loop() {
@@ -106,14 +123,5 @@ void loop() {
   // TODO: Allow character to move around and animate
   updatePlayer();
   draw();
-}
-
-void draw() {
-  arduboy.clear();
-  // Draw platforms of level
-  drawLevel();
-  // Character sprite
-  drawPlayer();
-  arduboy.display();
 }
 

@@ -1,6 +1,10 @@
 #pragma once
+#ifdef MOCK_SDL
+#define PROGMEM
+#else
 #include <avr/pgmspace.h>
-#include "attolass_types.h"
+#endif
+#include "attolass.h"
 
 extern const level_t res_level_concept[];
 
