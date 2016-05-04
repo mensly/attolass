@@ -30,14 +30,15 @@
 /* Begin PBXFileReference section */
 		3188079A1CDA03B900605168 /* attolass-sdl */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "attolass-sdl"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3188079D1CDA03B900605168 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../main.cpp; sourceTree = "<group>"; };
-		318807A41CDA03E500605168 /* SDL2_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_image.framework; path = ../../../../../../Library/Frameworks/SDL2_image.framework; sourceTree = "<group>"; };
-		318807A51CDA03E500605168 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../../../../../Library/Frameworks/SDL2.framework; sourceTree = "<group>"; };
+		318807A41CDA03E500605168 /* SDL2_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_image.framework; path = /Library/Frameworks/SDL2_image.framework; sourceTree = "<absolute>"; };
+		318807A51CDA03E500605168 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = /Library/Frameworks/SDL2.framework; sourceTree = "<absolute>"; };
 		318807A81CDA041800605168 /* Mockboy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mockboy.cpp; sourceTree = SOURCE_ROOT; };
 		318807A91CDA041800605168 /* Mockboy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mockboy.h; sourceTree = SOURCE_ROOT; };
-		318807AC1CDA049900605168 /* attolass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = attolass.h; path = ../attolass.h; sourceTree = "<group>"; };
-		318807AD1CDA049900605168 /* attolass.ino */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = attolass.ino; path = ../attolass.ino; sourceTree = "<group>"; };
-		318807AE1CDA049900605168 /* resources.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = resources.c; path = ../resources.c; sourceTree = "<group>"; };
-		318807AF1CDA049900605168 /* resources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = resources.h; path = ../resources.h; sourceTree = "<group>"; };
+		318807AC1CDA049900605168 /* attolass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = attolass.h; sourceTree = "<group>"; };
+		318807AD1CDA049900605168 /* attolass.ino */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; path = attolass.ino; sourceTree = "<group>"; };
+		318807AE1CDA049900605168 /* resources.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = resources.c; sourceTree = "<group>"; };
+		318807AF1CDA049900605168 /* resources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = resources.h; sourceTree = "<group>"; };
+		318807B31CDA227400605168 /* process_resources.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = process_resources.py; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,9 +58,8 @@
 			isa = PBXGroup;
 			children = (
 				318807AB1CDA049000605168 /* attolass */,
-				318807A41CDA03E500605168 /* SDL2_image.framework */,
-				318807A51CDA03E500605168 /* SDL2.framework */,
 				3188079C1CDA03B900605168 /* attolass-sdl */,
+				318807B21CDA20E500605168 /* frameworks */,
 				3188079B1CDA03B900605168 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -89,8 +89,19 @@
 				318807AD1CDA049900605168 /* attolass.ino */,
 				318807AE1CDA049900605168 /* resources.c */,
 				318807AF1CDA049900605168 /* resources.h */,
+				318807B31CDA227400605168 /* process_resources.py */,
 			);
 			name = attolass;
+			path = ..;
+			sourceTree = "<group>";
+		};
+		318807B21CDA20E500605168 /* frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				318807A41CDA03E500605168 /* SDL2_image.framework */,
+				318807A51CDA03E500605168 /* SDL2.framework */,
+			);
+			name = frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
