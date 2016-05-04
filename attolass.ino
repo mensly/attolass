@@ -31,7 +31,10 @@ position_t levelPosition;       // Overall position of scroll through the curren
 uint8_t sectionOffset;          // Offset between the levelPosition and start of the position of the first section
 position_t playerX = PLAYER_POSITION_CENTER;
 position_t playerY = SCREEN_HEIGHT / 2;
-bool jumping;                   // Currently in a jump
+bool jumping = false;           // Currently in a jump
+bool moving = false;            // Currently moving left/right
+const uint8_t FPS = 30;
+uint8_t frame = 0;              // Frame number that loops back to 0 when it reaches FPS
 
 void updatePlayer() {
     if (arduboy.pressed(LEFT_BUTTON)) {
@@ -41,20 +44,25 @@ void updatePlayer() {
         if (playerX > 0) {
             playerX--;
         }
+        moving = true;
         // TODO: Update level pointer and sectionOffset
     }
-    if (arduboy.pressed(RIGHT_BUTTON)) {
+    else if (arduboy.pressed(RIGHT_BUTTON)) {
         playerX++;
         if (playerX >= PLAYER_POSITION_CENTER) {
             levelPosition++;
         }
+        moving = true;
         // TODO: Update level pointer and sectionOffset
+    }
+    else {
+        moving = false;
     }
     jumping = arduboy.pressed(A_BUTTON);
 }
 
 void drawLevel() {
-    // TODO: Allow a pixel offset
+    // TODO: Allow drawing using sectionOffset
     const level_t* pointer = level;
     level_t current = pgm_read_byte_near(pointer);
     coord_t x,y,width,height;
@@ -88,11 +96,18 @@ void drawLevel() {
 }
 
 void drawPlayer() {
+    position_t drawPlayerX = playerX - levelPosition;
     if (jumping) {
-        arduboy.drawBitmap(playerX - levelPosition, playerY - 10, SPRITE(attolass_jump), BLACK);
+        arduboy.drawBitmap(drawPlayerX, playerY - 10, SPRITE(attolass_jump), BLACK);
+    }
+    else if (!moving) {
+        arduboy.drawBitmap(drawPlayerX, playerY, SPRITE(attolass_stand), BLACK);
+    }
+    else if ((frame % 6) < 3) {
+        arduboy.drawBitmap(drawPlayerX, playerY, SPRITE(attolass_walk_1), BLACK);
     }
     else {
-        arduboy.drawBitmap(playerX - levelPosition, playerY, SPRITE(attolass_stand), BLACK);
+        arduboy.drawBitmap(drawPlayerX, playerY, SPRITE(attolass_walk_2), BLACK);
     }
 }
 
@@ -101,7 +116,7 @@ void setup() {
     Serial.begin(9600);
 #endif
     arduboy.begin();
-    arduboy.setFrameRate(30);
+    arduboy.setFrameRate(FPS);
 
     level = levelStart = res_level_concept;
 }
@@ -119,6 +134,7 @@ void loop() {
     // pause render until it's time for the next frame
     if (!(arduboy.nextFrame()))
         return;
+    frame = (frame + 1) % FPS;
     // TODO: Allow scrolling level offset and redrawing
     // TODO: Allow character to move around and animate
     updatePlayer();
