@@ -112,22 +112,43 @@ void updatePlayer() {
     if (arduboy.pressed(LEFT_BUTTON) && canMove(DirectionLeft)) {
         if (levelPosition > 0) {
             levelPosition--;
+            if (sectionOffset == 0) {
+                // Move to previous section
+                level--;
+                while (pgm_read_byte_near(level) & FLAG_BLOCK) {
+                    level--;
+                }
+                // Read in length of new section to find new offset
+                sectionOffset = (pgm_read_byte_near(level) & MASK_SECTION) - 1;
+            }
+            else {
+                sectionOffset--;
+            }
         }
         if (playerX > 0) {
             playerX--;
         }
         moving = true;
         flipSprite = true;
-        // TODO: Update level pointer and sectionOffset
     }
     else if (arduboy.pressed(RIGHT_BUTTON) && canMove(DirectionRight)) {
         playerX++;
         if (playerX >= PLAYER_POSITION_CENTER) {
+            // TODO: Check for right bound of level
             levelPosition++;
+            sectionOffset++;
+            // Check if at the end of this section
+            if (sectionOffset == (pgm_read_byte_near(level) & MASK_SECTION)) {
+                sectionOffset = 0;
+                // Move to next section
+                level++;
+                while (pgm_read_byte_near(level) & FLAG_BLOCK) {
+                    level++;
+                }
+            }
         }
         moving = true;
         flipSprite = false;
-        // TODO: Update level pointer and sectionOffset
     }
     else {
         moving = false;
@@ -166,7 +187,7 @@ void drawLevel() {
     // TODO: Allow drawing using sectionOffset
     const level_t* pointer = level;
     level_t current = pgm_read_byte_near(pointer);
-    int16_t x = -levelPosition;
+    int16_t x = -sectionOffset;
     coord_t y,width,height;
     do {
         // Read in width of this section
