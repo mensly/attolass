@@ -13,10 +13,33 @@ PROGMEM const level_t res_level_concept[] = {
 
     40  & MASK_SECTION,
     24  | FLAG_BLOCK,
-
+    
     40  & MASK_SECTION,
     24  | FLAG_BLOCK,
     40  | FLAG_BLOCK,
+    
+    60 & MASK_SECTION,
+    2   | FLAG_BLOCK,
+    40  | FLAG_BLOCK,
+    
+    10  & MASK_SECTION,
+    2  | FLAG_BLOCK,
+    18 | FLAG_BLOCK,
+    20  | FLAG_BLOCK,
+    54  | FLAG_BLOCK,
+    
+    10  & MASK_SECTION,
+    2  | FLAG_BLOCK,
+    26 | FLAG_BLOCK,
+    28  | FLAG_BLOCK,
+    54  | FLAG_BLOCK,
+    
+    127 & MASK_SECTION,
+    2   | FLAG_BLOCK,
+    26  | FLAG_BLOCK,
+    42  | FLAG_BLOCK,
+    54  | FLAG_BLOCK,
+    
 
     0
 };

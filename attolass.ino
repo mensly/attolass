@@ -37,6 +37,7 @@ position_t playerY = SCREEN_HEIGHT / 2;
 int8_t yVelocity = 0;
 bool prevJumping = false;           // Previous frame was a jump
 bool jumping = false;           // Currently in a jump
+bool falling = false;           // Currently falling
 bool moving = false;            // Currently moving left/right
 const uint8_t FPS = 30;         // FPS to run game at
 uint8_t frame = 0;              // Frame number that loops back to 0 when it reaches FPS
@@ -101,6 +102,7 @@ void applyVelocity() {
                 break;
             }
             playerY++;
+            falling = true;
         }
     }
 }
@@ -133,13 +135,13 @@ void updatePlayer() {
     // Calculate y velocity based on jump button
     jumping = arduboy.pressed(A_BUTTON);
     if (canMove(DirectionDown)) {
-        if (yVelocity == 0 && hover > 0) {
+        if (yVelocity == 0 && hover > 0 && jumping) {
             hover--;
         }
         else {
             yVelocity++;
             if (yVelocity > MAX_Y_VELOCITY) {
-                yVelocity--;
+                yVelocity = MAX_Y_VELOCITY;
             }
         }
     }
@@ -154,16 +156,18 @@ void updatePlayer() {
         }
 
     }
+    falling = false;
     // Apply y velocity based on nearby blocks
     applyVelocity();
+    falling |= canMove(DirectionDown);
 }
 
 void drawLevel() {
     // TODO: Allow drawing using sectionOffset
     const level_t* pointer = level;
     level_t current = pgm_read_byte_near(pointer);
-    coord_t x,y,width,height;
-    x = 0;
+    int16_t x = -levelPosition;
+    coord_t y,width,height;
     do {
         // Read in width of this section
         width = current & MASK_SECTION;
@@ -178,7 +182,7 @@ void drawLevel() {
             y = SCREEN_HEIGHT - (current & MASK_HEIGHT);
             height = height - y;
             if (height > 0 && drawSpace) {
-                arduboy.fillRect(x - levelPosition, y, width, height, WHITE);
+                arduboy.fillRect(x, y, width, height, WHITE);
             }
             // Blocks in a section alternate between solid and clear
             drawSpace = !drawSpace;
@@ -186,7 +190,7 @@ void drawLevel() {
         }
         if (drawSpace) {
             // Draw remainder of screen
-            arduboy.fillRect(x - levelPosition, 0, width, y, WHITE);
+            arduboy.fillRect(x, 0, width, y, WHITE);
         }
         x += width;
     } while (current != 0 && x < SCREEN_WIDTH);
@@ -194,7 +198,7 @@ void drawLevel() {
 
 void drawPlayer() {
     position_t drawPlayerX = playerX - levelPosition;
-    if (jumping || yVelocity != 0) {
+    if (jumping || falling) {
         if (flipSprite) {
             arduboy.drawBitmap(drawPlayerX, playerY, SPRITE(attolass_jump_left), BLACK);
         }
