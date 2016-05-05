@@ -27,7 +27,7 @@ def replace_region(filename, region, content):
 
 
 
-HEADER_TEMPLATE = """extern const uint8_t res_sprite_{0}_data[];
+SPRITE_HEADER_TEMPLATE = """extern const uint8_t res_sprite_{0}_data[];
 #define res_sprite_{0}_width 8
 #define res_sprite_{0}_height 8
 """
@@ -64,12 +64,14 @@ sprite_header = ""
 sprite_data = ""
 for sprite_file in os.listdir(sprite_dir):
     if sprite_file.endswith('.png'):
+        # Create sprite
         sprite_name = os.path.splitext(sprite_file)[0]
-        sprite_header += HEADER_TEMPLATE.format(sprite_name) + "\n"
+        sprite_header += SPRITE_HEADER_TEMPLATE.format(sprite_name) + "\n"
         sprite_data += create_sprite(sprite_name, os.path.join(sprite_dir, sprite_file)) + "\n"
         if sprite_name.endswith('right'):
+            # Create flipped sprite
             sprite_name = sprite_name.replace('right', 'left')
-            sprite_header += HEADER_TEMPLATE.format(sprite_name) + "\n"
+            sprite_header += SPRITE_HEADER_TEMPLATE.format(sprite_name) + "\n"
             sprite_data += create_sprite(sprite_name, os.path.join(sprite_dir, sprite_file), True) + "\n"
 
 replace_region('resources.h', 'res_sprite', sprite_header)
@@ -78,5 +80,51 @@ replace_region('resources.c', 'res_sprite', sprite_data)
 #print sprite_header
 #print sprite_data
 
-# TODO: Process res/level/*.png into C code
-# TODO: Insert code into res_level region of resources.c/resources.h
+class Section:
+    def __init__(self, bitmap, count=1):
+        self.bitmap = bitmap
+        self.count = count
+
+    def __str__(self):
+        return "// TODO {1} x {0:b}".format(self.bitmap, self.count)
+
+LEVEL_HEADER_TEMPLATE = "extern const level_t res_level_{0}[];"
+# Process res/level/*.png into C code
+def create_level(name, file):
+    (width, height, pixels, metadata) = png.Reader(filename=file).asRGBA8()
+    if height <> 64: raise Exception("levels must be 64 pixels high")
+    # Convert image into list of sections (each column can be represented as a 64 bit int)
+    pixels = [row[3::4] for row in pixels]
+    resource =  "PROGMEM const level_t res_level_{0}[] = ".format(name) + "{\n"
+    section = None
+    for x in xrange(width):
+        bitmap = 0
+        for y in xrange(height):
+            if pixels[y][x]:
+                bitmap += (1 << y)
+        if section and section.bitmap == bitmap:
+            section.count += 1
+        else:
+            if section:
+                resource += str(section) + "\n"
+            section = Section(bitmap)
+    if section:
+        resource += str(section) + "\n"
+    resource += "0 };\n"
+    return resource
+
+level_dir = os.path.join(dir, 'res/level')
+level_header = ""
+level_data = ""
+for level_file in os.listdir(level_dir):
+    if level_file.endswith('.png'):
+        # Create level
+        level_name = os.path.splitext(level_file)[0]
+        level_header += LEVEL_HEADER_TEMPLATE.format(level_name) + "\n"
+        level_data += create_level(level_name, os.path.join(level_dir, level_file)) + "\n"
+
+#replace_region('resources.h', 'res_level', level_header)
+#replace_region('resources.c', 'res_level', level_data)
+#print level_header
+#print level_data
+
