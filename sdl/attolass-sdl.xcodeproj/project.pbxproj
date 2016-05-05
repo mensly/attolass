@@ -168,7 +168,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = ../process_resources.py;
+			shellScript = "../process_resources.py\ngit update-index --assume-unchanged ../resources.*";
 		};
 /* End PBXShellScriptBuildPhase section */
 

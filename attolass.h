@@ -21,6 +21,11 @@ typedef uint8_t level_t;
 typedef uint8_t coord_t;
 typedef uint32_t position_t;
 
+typedef struct {
+    position_t x;
+    position_t y;
+} position_pair_t;
+
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
 

@@ -35,8 +35,7 @@ position_t levelPosition;       // Overall position of scroll through the curren
 uint8_t sectionOffset;          // Offset between the levelPosition and start of the position of the first section
 const level_t* lastScreenSection;      // Pointer to the first section to display on the current level's last screen
 uint8_t lastScreenOffset;       // Offset to draw lastSCreenSection when at last screen
-position_t playerX = PLAYER_POSITION_CENTER;
-position_t playerY = SCREEN_HEIGHT / 4;
+position_pair_t player = { PLAYER_POSITION_CENTER, SCREEN_HEIGHT / 4 };
 int8_t yVelocity = 0;
 bool prevJumping = false;           // Previous frame was a jump
 bool jumping = false;           // Currently in a jump
@@ -68,31 +67,31 @@ bool isAnyPixel(coord_t x, coord_t y, coord_t width, coord_t height, uint8_t col
 bool canMove(direction_t direction) {
     switch (direction) {
         case DirectionUp: {
-            return playerY > 0 && !isAnyPixel(playerX - levelPosition, playerY - 1, CHARACTER_SIZE, 1, BLACK);
+            return player.y > 0 && !isAnyPixel(player.x - levelPosition, player.y - 1, CHARACTER_SIZE, 1, BLACK);
         }
         case DirectionDown: {
-            position_t pixelY = playerY + CHARACTER_SIZE;
+            position_t pixelY = player.y + CHARACTER_SIZE;
             return pixelY >= SCREEN_HEIGHT ||
-                !isAnyPixel(playerX - levelPosition, pixelY,
+                !isAnyPixel(player.x - levelPosition, pixelY,
                             CHARACTER_SIZE, 1, BLACK);
         }
         case DirectionRight: {
-            position_t pixelX = playerX - levelPosition + CHARACTER_SIZE;
-            coord_t height = SCREEN_HEIGHT - playerY;
+            position_t pixelX = player.x - levelPosition + CHARACTER_SIZE;
+            coord_t height = SCREEN_HEIGHT - player.y;
             if (height > CHARACTER_SIZE) {
                 height = CHARACTER_SIZE;
             }
             return pixelX < SCREEN_WIDTH &&
-                !isAnyPixel(playerX - levelPosition + CHARACTER_SIZE,
-                            playerY, 1, height, BLACK);
+                !isAnyPixel(player.x - levelPosition + CHARACTER_SIZE,
+                            player.y, 1, height, BLACK);
         }
         case DirectionLeft: {
-            position_t pixelX = playerX - levelPosition;
-            coord_t height = SCREEN_HEIGHT - playerY;
+            position_t pixelX = player.x - levelPosition;
+            coord_t height = SCREEN_HEIGHT - player.y;
             if (height > CHARACTER_SIZE) {
                 height = CHARACTER_SIZE;
             }
-            return pixelX > 0 && !isAnyPixel(pixelX - 1, playerY, 1, height, BLACK);
+            return pixelX > 0 && !isAnyPixel(pixelX - 1, player.y, 1, height, BLACK);
         }
         default:
             return false;
@@ -108,7 +107,7 @@ void applyVelocity() {
                     hover = 0;
                     break;
                 }
-                playerY--;
+                player.y--;
             }
         }
         else {
@@ -122,22 +121,22 @@ void applyVelocity() {
                 hover = 0;
                 break;
             }
-            playerY++;
+            player.y++;
             falling = true;
         }
     }
 }
 
 void updatePlayer() {
-    if (playerY >= SCREEN_HEIGHT) {
+    if (player.y >= SCREEN_HEIGHT) {
         // Death by pit
         restartLevel();
         return;
     }
     prevJumping = jumping;
     if (arduboy.pressed(LEFT_BUTTON) && canMove(DirectionLeft)) {
-        playerX--;
-        if (playerX <= PLAYER_POSITION_CENTER + levelPosition && levelPosition > 0) {
+        player.x--;
+        if (player.x <= PLAYER_POSITION_CENTER + levelPosition && levelPosition > 0) {
             levelPosition--;
             if (sectionOffset == 0) {
                 // Move to previous section
@@ -156,8 +155,8 @@ void updatePlayer() {
         flipSprite = true;
     }
     else if (arduboy.pressed(RIGHT_BUTTON) && canMove(DirectionRight)) {
-        playerX++;
-        if (playerX >= PLAYER_POSITION_CENTER &&
+        player.x++;
+        if (player.x >= PLAYER_POSITION_CENTER &&
                 (level < lastScreenSection || sectionOffset < lastScreenOffset)) {
             levelPosition++;
             sectionOffset++;
@@ -241,37 +240,37 @@ void drawLevel() {
 }
 
 void drawPlayer() {
-    position_t drawPlayerX = playerX - levelPosition;
+    position_t drawPlayerX = player.x - levelPosition;
     if (falling) {
         if (flipSprite) {
-            arduboy.drawBitmap(drawPlayerX, playerY, SPRITE(attolass_jump_left), BLACK);
+            arduboy.drawBitmap(drawPlayerX, player.y, SPRITE(attolass_jump_left), BLACK);
         }
         else {
-            arduboy.drawBitmap(drawPlayerX, playerY, SPRITE(attolass_jump_right), BLACK);
+            arduboy.drawBitmap(drawPlayerX, player.y, SPRITE(attolass_jump_right), BLACK);
         }
     }
     else if (!moving) {
         if (flipSprite) {
-            arduboy.drawBitmap(drawPlayerX, playerY, SPRITE(attolass_stand_left), BLACK);
+            arduboy.drawBitmap(drawPlayerX, player.y, SPRITE(attolass_stand_left), BLACK);
         }
         else {
-            arduboy.drawBitmap(drawPlayerX, playerY, SPRITE(attolass_stand_right), BLACK);
+            arduboy.drawBitmap(drawPlayerX, player.y, SPRITE(attolass_stand_right), BLACK);
         }
     }
     else if ((frame % 6) < 3) {
         if (flipSprite) {
-            arduboy.drawBitmap(drawPlayerX, playerY, SPRITE(attolass_walk_1_left), BLACK);
+            arduboy.drawBitmap(drawPlayerX, player.y, SPRITE(attolass_walk_1_left), BLACK);
         }
         else {
-            arduboy.drawBitmap(drawPlayerX, playerY, SPRITE(attolass_walk_1_right), BLACK);
+            arduboy.drawBitmap(drawPlayerX, player.y, SPRITE(attolass_walk_1_right), BLACK);
         }
     }
     else {
         if (flipSprite) {
-            arduboy.drawBitmap(drawPlayerX, playerY, SPRITE(attolass_walk_2_left), BLACK);
+            arduboy.drawBitmap(drawPlayerX, player.y, SPRITE(attolass_walk_2_left), BLACK);
         }
         else {
-            arduboy.drawBitmap(drawPlayerX, playerY, SPRITE(attolass_walk_2_right), BLACK);
+            arduboy.drawBitmap(drawPlayerX, player.y, SPRITE(attolass_walk_2_right), BLACK);
         }
     }
 }
@@ -280,8 +279,8 @@ void setLevel(const level_t* chosenLevel) {
     // Restart positions and player state for level
     levelPosition = 0;
     sectionOffset = 0;
-    playerX = PLAYER_POSITION_CENTER;
-    playerY = SCREEN_HEIGHT / 4;
+    player.x = PLAYER_POSITION_CENTER;
+    player.y = SCREEN_HEIGHT / 4;
     jumping = false;
     prevJumping = false;
     falling = false;
