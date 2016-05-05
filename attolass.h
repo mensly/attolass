@@ -24,6 +24,6 @@ typedef uint32_t position_t;
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
 
-
+void restartLevel();
 void setup();
 void loop();

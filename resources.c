@@ -1,5 +1,8 @@
 #include "resources.h"
 
+#define FILLED_SECTION  MASK_SECTION
+#define EMPTY_SECTION   MASK_SECTION, FLAG_BLOCK
+
 #pragma region res_level
 PROGMEM const level_t res_level_concept[] = {
     16  & MASK_SECTION,
@@ -18,7 +21,15 @@ PROGMEM const level_t res_level_concept[] = {
     24  | FLAG_BLOCK,
     40  | FLAG_BLOCK,
     
-    60 & MASK_SECTION,
+    30 & MASK_SECTION,
+    2   | FLAG_BLOCK,
+    40  | FLAG_BLOCK,
+    
+    10 & MASK_SECTION,
+    0 | FLAG_BLOCK,
+    40 | FLAG_BLOCK,
+    
+    4  & MASK_SECTION,
     2   | FLAG_BLOCK,
     40  | FLAG_BLOCK,
     
@@ -40,6 +51,9 @@ PROGMEM const level_t res_level_concept[] = {
     42  | FLAG_BLOCK,
     54  | FLAG_BLOCK,
     
+    2   & FILLED_SECTION,
+    
+    30  & EMPTY_SECTION,
 
     0
 };

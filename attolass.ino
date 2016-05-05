@@ -22,6 +22,7 @@
 #endif
 
 #define PGM_INCREMENT(pointer, value) pointer++; value = pgm_read_byte_near(pointer);
+#define PGM_DECREMENT(pointer, value) pointer--; value = pgm_read_byte_near(pointer);
 
 const uint8_t CHARACTER_SIZE = 8;
 #define MAX_Y_VELOCITY 6
@@ -32,6 +33,8 @@ const level_t* levelStart;      // Pointer to the start of the current level's d
 const level_t* level;           // Pointer to the first section to display in the current level
 position_t levelPosition;       // Overall position of scroll through the current level
 uint8_t sectionOffset;          // Offset between the levelPosition and start of the position of the first section
+const level_t* lastScreenSection;      // Pointer to the first section to display on the current level's last screen
+uint8_t lastScreenOffset;       // Offset to draw lastSCreenSection when at last screen
 position_t playerX = PLAYER_POSITION_CENTER;
 position_t playerY = SCREEN_HEIGHT / 2;
 int8_t yVelocity = 0;
@@ -64,18 +67,28 @@ bool isAnyPixel(coord_t x, coord_t y, coord_t width, coord_t height, uint8_t col
 
 bool canMove(direction_t direction) {
     switch (direction) {
-        case DirectionUp:
+        case DirectionUp: {
             return !isAnyPixel(playerX - levelPosition, playerY - 1, CHARACTER_SIZE, 1, BLACK);
-        case DirectionDown:
-            return !isAnyPixel(playerX - levelPosition, playerY + CHARACTER_SIZE, CHARACTER_SIZE, 1, BLACK);
-        case DirectionRight:
-            return !isAnyPixel(playerX - levelPosition + CHARACTER_SIZE, playerY, 1, CHARACTER_SIZE, BLACK);
-        case DirectionLeft:
-            return !isAnyPixel(playerX - levelPosition - 1, playerY, 1, CHARACTER_SIZE, BLACK);
+        }
+        case DirectionDown: {
+            position_t pixelY = playerY + CHARACTER_SIZE;
+            return pixelY >= SCREEN_HEIGHT ||
+                !isAnyPixel(playerX - levelPosition, pixelY,
+                            CHARACTER_SIZE, 1, BLACK);
+        }
+        case DirectionRight: {
+            position_t pixelX = playerX - levelPosition + CHARACTER_SIZE;
+            return pixelX < SCREEN_WIDTH &&
+                !isAnyPixel(playerX - levelPosition + CHARACTER_SIZE,
+                            playerY, 1, CHARACTER_SIZE, BLACK);
+        }
+        case DirectionLeft: {
+            position_t pixelX = playerX - levelPosition;
+            return pixelX > 0 && !isAnyPixel(pixelX - 1, playerY, 1, CHARACTER_SIZE, BLACK);
+        }
         default:
             return false;
     }
-    // Can fall if there are no black pixels below the character
 }
 
 void applyVelocity() {
@@ -108,13 +121,19 @@ void applyVelocity() {
 }
 
 void updatePlayer() {
+    if (playerY >= SCREEN_HEIGHT) {
+        // Death by pit
+        restartLevel();
+        return;
+    }
     prevJumping = jumping;
     if (arduboy.pressed(LEFT_BUTTON) && canMove(DirectionLeft)) {
-        if (levelPosition > 0) {
+        playerX--;
+        if (playerX <= PLAYER_POSITION_CENTER + levelPosition && levelPosition > 0) {
             levelPosition--;
             if (sectionOffset == 0) {
                 // Move to previous section
-                level--;
+                level--; // This can never underflow due to the levelPosition variable check
                 while (pgm_read_byte_near(level) & FLAG_BLOCK) {
                     level--;
                 }
@@ -125,16 +144,13 @@ void updatePlayer() {
                 sectionOffset--;
             }
         }
-        if (playerX > 0) {
-            playerX--;
-        }
         moving = true;
         flipSprite = true;
     }
     else if (arduboy.pressed(RIGHT_BUTTON) && canMove(DirectionRight)) {
         playerX++;
-        if (playerX >= PLAYER_POSITION_CENTER) {
-            // TODO: Check for right bound of level
+        if (playerX >= PLAYER_POSITION_CENTER &&
+                (level < lastScreenSection || sectionOffset < lastScreenOffset)) {
             levelPosition++;
             sectionOffset++;
             // Check if at the end of this section
@@ -184,7 +200,6 @@ void updatePlayer() {
 }
 
 void drawLevel() {
-    // TODO: Allow drawing using sectionOffset
     const level_t* pointer = level;
     level_t current = pgm_read_byte_near(pointer);
     int16_t x = -sectionOffset;
@@ -219,7 +234,7 @@ void drawLevel() {
 
 void drawPlayer() {
     position_t drawPlayerX = playerX - levelPosition;
-    if (jumping || falling) {
+    if (falling) {
         if (flipSprite) {
             arduboy.drawBitmap(drawPlayerX, playerY, SPRITE(attolass_jump_left), BLACK);
         }
@@ -253,6 +268,53 @@ void drawPlayer() {
     }
 }
 
+void setLevel(const level_t* chosenLevel) {
+    // Restart positions and player state for level
+    levelPosition = 0;
+    sectionOffset = 0;
+    playerX = PLAYER_POSITION_CENTER;
+    playerY = SCREEN_HEIGHT / 2;
+    jumping = false;
+    prevJumping = false;
+    falling = false;
+    moving = false;
+    flipSprite = false;
+    
+    // Store level as the start and current position
+    level = chosenLevel;
+    levelStart = chosenLevel;
+    
+    // Calculate location of final screen
+    // Start by finding end level
+    lastScreenSection = level;
+    uint8_t current = pgm_read_byte_near(lastScreenSection);
+    do {
+        PGM_INCREMENT(lastScreenSection, current);
+    } while (current);
+    // Now move back to allocate enough width for a full screen
+    lastScreenOffset = 0; // Edge case of level small enough for levelStart == lastScreenSection
+    position_t remaining = SCREEN_WIDTH;
+    do {
+        PGM_DECREMENT(lastScreenSection, current);
+        if ((current & FLAG_BLOCK) == 0) { // Each that is not a block
+            uint8_t sectionLength = (current & MASK_SECTION);
+            if (remaining > sectionLength) {
+                remaining -= sectionLength;
+            }
+            else {
+                lastScreenOffset = sectionLength - remaining;
+                remaining = 0;
+            }
+        }
+    } while (remaining > 0 && lastScreenSection > levelStart);
+    
+}
+
+void restartLevel() {
+    // TODO: Decrement lives
+    setLevel(levelStart);
+}
+
 void setup() {
 #ifdef START_SERIAL
     Serial.begin(9600);
@@ -260,7 +322,7 @@ void setup() {
     arduboy.begin();
     arduboy.setFrameRate(FPS);
 
-    level = levelStart = res_level_concept;
+    setLevel(res_level_concept);
 }
 
 void draw() {
@@ -277,8 +339,6 @@ void loop() {
     if (!(arduboy.nextFrame()))
         return;
     frame = (frame + 1) % FPS;
-    // TODO: Allow scrolling level offset and redrawing
-    // TODO: Allow character to move around and animate
     updatePlayer();
     draw();
 }
