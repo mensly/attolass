@@ -36,7 +36,7 @@ uint8_t sectionOffset;          // Offset between the levelPosition and start of
 const level_t* lastScreenSection;      // Pointer to the first section to display on the current level's last screen
 uint8_t lastScreenOffset;       // Offset to draw lastSCreenSection when at last screen
 position_t playerX = PLAYER_POSITION_CENTER;
-position_t playerY = SCREEN_HEIGHT / 2;
+position_t playerY = SCREEN_HEIGHT / 4;
 int8_t yVelocity = 0;
 bool prevJumping = false;           // Previous frame was a jump
 bool jumping = false;           // Currently in a jump
@@ -68,7 +68,7 @@ bool isAnyPixel(coord_t x, coord_t y, coord_t width, coord_t height, uint8_t col
 bool canMove(direction_t direction) {
     switch (direction) {
         case DirectionUp: {
-            return !isAnyPixel(playerX - levelPosition, playerY - 1, CHARACTER_SIZE, 1, BLACK);
+            return playerY > 0 && !isAnyPixel(playerX - levelPosition, playerY - 1, CHARACTER_SIZE, 1, BLACK);
         }
         case DirectionDown: {
             position_t pixelY = playerY + CHARACTER_SIZE;
@@ -78,13 +78,21 @@ bool canMove(direction_t direction) {
         }
         case DirectionRight: {
             position_t pixelX = playerX - levelPosition + CHARACTER_SIZE;
+            coord_t height = SCREEN_HEIGHT - playerY;
+            if (height > CHARACTER_SIZE) {
+                height = CHARACTER_SIZE;
+            }
             return pixelX < SCREEN_WIDTH &&
                 !isAnyPixel(playerX - levelPosition + CHARACTER_SIZE,
-                            playerY, 1, CHARACTER_SIZE, BLACK);
+                            playerY, 1, height, BLACK);
         }
         case DirectionLeft: {
             position_t pixelX = playerX - levelPosition;
-            return pixelX > 0 && !isAnyPixel(pixelX - 1, playerY, 1, CHARACTER_SIZE, BLACK);
+            coord_t height = SCREEN_HEIGHT - playerY;
+            if (height > CHARACTER_SIZE) {
+                height = CHARACTER_SIZE;
+            }
+            return pixelX > 0 && !isAnyPixel(pixelX - 1, playerY, 1, height, BLACK);
         }
         default:
             return false;
@@ -273,7 +281,7 @@ void setLevel(const level_t* chosenLevel) {
     levelPosition = 0;
     sectionOffset = 0;
     playerX = PLAYER_POSITION_CENTER;
-    playerY = SCREEN_HEIGHT / 2;
+    playerY = SCREEN_HEIGHT / 4;
     jumping = false;
     prevJumping = false;
     falling = false;

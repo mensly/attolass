@@ -86,7 +86,21 @@ class Section:
         self.count = count
 
     def __str__(self):
-        return "// TODO {1} x {0:b}".format(self.bitmap, self.count)
+        resource = "    {0}&MASK_SECTION,".format(self.count)
+        bitmap = "{0:064b}".format(self.bitmap)
+        search_ch = '0'
+        swap_index = 0
+        try:
+            while True:
+                swap_index = bitmap.index(search_ch, swap_index)
+                resource += "{0}|FLAG_BLOCK,".format(swap_index)
+                if search_ch == '0':
+                    search_ch = '1'
+                else:
+                    search_ch = '0'
+        except ValueError:
+            pass
+        return resource
 
 LEVEL_HEADER_TEMPLATE = "extern const level_t res_level_{0}[];"
 # Process res/level/*.png into C code
@@ -102,7 +116,7 @@ def create_level(name, file):
         for y in xrange(height):
             if pixels[y][x]:
                 bitmap += (1 << y)
-        if section and section.bitmap == bitmap:
+        if section and section.bitmap == bitmap and section.count < 127:
             section.count += 1
         else:
             if section:
@@ -123,8 +137,8 @@ for level_file in os.listdir(level_dir):
         level_header += LEVEL_HEADER_TEMPLATE.format(level_name) + "\n"
         level_data += create_level(level_name, os.path.join(level_dir, level_file)) + "\n"
 
-#replace_region('resources.h', 'res_level', level_header)
-#replace_region('resources.c', 'res_level', level_data)
+replace_region('resources.h', 'res_level', level_header)
+replace_region('resources.c', 'res_level', level_data)
 #print level_header
 #print level_data
 
