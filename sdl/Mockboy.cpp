@@ -77,9 +77,9 @@ uint8_t Mockboy::getKeyFlag(SDL_Keycode sdlKeyCode) {
             return UP_BUTTON;
         case SDLK_DOWN:
             return DOWN_BUTTON;
-        case SDLK_x:
-            return A_BUTTON;
         case SDLK_z:
+            return A_BUTTON;
+        case SDLK_x:
             return B_BUTTON;
         default:
             return 0;

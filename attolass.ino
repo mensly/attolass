@@ -24,28 +24,40 @@
 #define PGM_INCREMENT(pointer, value) pointer++; value = pgm_read_byte_near(pointer);
 #define PGM_DECREMENT(pointer, value) pointer--; value = pgm_read_byte_near(pointer);
 
+#define JUMP_BUTTON B_BUTTON
+#define SHOOT_BUTTON A_BUTTON
+
 const uint8_t CHARACTER_SIZE = 8;
 #define MAX_Y_VELOCITY 6
 #define APPLY_Y_VELOCITY (-MAX_Y_VELOCITY)
 const coord_t PLAYER_POSITION_CENTER = (SCREEN_WIDTH - CHARACTER_SIZE) / 2;
+const shot_t POSITION_NULL = {false, 0, {0, 0}};
+#define MAX_SHOTS 3
+#define SHOT_VELOCITY 3
 
 const level_t* levelStart;      // Pointer to the start of the current level's data
 const level_t* level;           // Pointer to the first section to display in the current level
 position_t levelPosition;       // Overall position of scroll through the current level
 uint8_t sectionOffset;          // Offset between the levelPosition and start of the position of the first section
-const level_t* lastScreenSection;      // Pointer to the first section to display on the current level's last screen
+const level_t* lastScreenSection;// Pointer to the first section to display on the current level's last screen
 uint8_t lastScreenOffset;       // Offset to draw lastSCreenSection when at last screen
-position_pair_t player = { PLAYER_POSITION_CENTER, SCREEN_HEIGHT / 4 };
-int8_t yVelocity = 0;
-bool prevJumping = false;           // Previous frame was a jump
+position_pair_t player = {      // Position of the player in the level
+    PLAYER_POSITION_CENTER,
+    SCREEN_HEIGHT / 4 };
+shot_t shots[MAX_SHOTS] = {     // Current positions in the level of shots
+    POSITION_NULL, POSITION_NULL, POSITION_NULL
+};
+int8_t yVelocity = 0;           // Current movement up or down
+bool prevJumping = false;       // Previous frame was a jump
 bool jumping = false;           // Currently in a jump
+bool prevShooting = false;      // Previous frame had the shoot button held
 bool falling = false;           // Currently falling
 bool moving = false;            // Currently moving left/right
 const uint8_t FPS = 30;         // FPS to run game at
 uint8_t frame = 0;              // Frame number that loops back to 0 when it reaches FPS
-bool flipSprite = false;        // Track facing (false=left, true=right)
-const uint8_t HOVER_COUNT = 5;
-uint8_t hover = 0;
+bool flipDirection = false;     // Track facing (false=left, true=right)
+const uint8_t HOVER_COUNT = 5;  // Number of frames to stay in the air the top of a jump
+uint8_t hover = 0;              // Remaining frames to say in the air at the top of a current jump
 
 typedef enum {
     DirectionUp, DirectionDown, DirectionLeft, DirectionRight
@@ -152,7 +164,7 @@ void updatePlayer() {
             }
         }
         moving = true;
-        flipSprite = true;
+        flipDirection = true;
     }
     else if (arduboy.pressed(RIGHT_BUTTON) && canMove(DirectionRight)) {
         player.x++;
@@ -171,13 +183,13 @@ void updatePlayer() {
             }
         }
         moving = true;
-        flipSprite = false;
+        flipDirection = false;
     }
     else {
         moving = false;
     }
     // Calculate y velocity based on jump button
-    jumping = arduboy.pressed(A_BUTTON);
+    jumping = arduboy.pressed(JUMP_BUTTON);
     if (canMove(DirectionDown)) {
         if (yVelocity == 0 && hover > 0 && jumping) {
             hover--;
@@ -204,6 +216,42 @@ void updatePlayer() {
     // Apply y velocity based on nearby blocks
     applyVelocity();
     falling |= canMove(DirectionDown);
+}
+
+void updateShooting() {
+    // Update positions
+    for (uint8_t i = 0; i < MAX_SHOTS; i++) {
+        if (shots[i].active) {
+            shots[i].position.x += shots[i].velocity;
+            // TODO: Collision detection with entities
+            // Check bounds
+            if (shots[i].position.x < levelPosition ||
+                shots[i].position.x > levelPosition + SCREEN_WIDTH) {
+                shots[i].active = false;
+            }
+        }
+    }
+    bool shooting = arduboy.pressed(SHOOT_BUTTON);
+    if (shooting && !prevShooting) {
+        // Find an available shot slot
+        for (uint8_t i = 0; i < MAX_SHOTS; i++) {
+            if (!shots[i].active) {
+                // Initialise at the same location as the player, with a default velocity
+                shots[i].active = true;
+                if (flipDirection) {
+                    shots[i].velocity = -SHOT_VELOCITY;
+                    shots[i].position.x = player.x;
+                }
+                else {
+                    shots[i].velocity = SHOT_VELOCITY;
+                    shots[i].position.x = player.x + CHARACTER_SIZE;
+                }
+                shots[i].position.y = player.y + CHARACTER_SIZE / 2;
+                break;
+            }
+        }
+    }
+    prevShooting = shooting;
 }
 
 void drawLevel() {
@@ -242,7 +290,7 @@ void drawLevel() {
 void drawPlayer() {
     position_t drawPlayerX = player.x - levelPosition;
     if (falling) {
-        if (flipSprite) {
+        if (flipDirection) {
             arduboy.drawBitmap(drawPlayerX, player.y, SPRITE(attolass_jump_left), BLACK);
         }
         else {
@@ -250,7 +298,7 @@ void drawPlayer() {
         }
     }
     else if (!moving) {
-        if (flipSprite) {
+        if (flipDirection) {
             arduboy.drawBitmap(drawPlayerX, player.y, SPRITE(attolass_stand_left), BLACK);
         }
         else {
@@ -258,7 +306,7 @@ void drawPlayer() {
         }
     }
     else if ((frame % 6) < 3) {
-        if (flipSprite) {
+        if (flipDirection) {
             arduboy.drawBitmap(drawPlayerX, player.y, SPRITE(attolass_walk_1_left), BLACK);
         }
         else {
@@ -266,11 +314,26 @@ void drawPlayer() {
         }
     }
     else {
-        if (flipSprite) {
+        if (flipDirection) {
             arduboy.drawBitmap(drawPlayerX, player.y, SPRITE(attolass_walk_2_left), BLACK);
         }
         else {
             arduboy.drawBitmap(drawPlayerX, player.y, SPRITE(attolass_walk_2_right), BLACK);
+        }
+    }
+}
+
+void drawShots() {
+    position_t drawX, drawY;
+    for (uint8_t i = 0; i < MAX_SHOTS; i++) {
+        if (shots[i].active) {
+            drawX = shots[i].position.x - levelPosition;
+            drawY = shots[i].position.y;
+            arduboy.drawPixel(drawX, drawY - 1, BLACK);
+            arduboy.drawPixel(drawX - 1, drawY, BLACK);
+            arduboy.drawPixel(drawX, drawY, (frame % 2) ? WHITE : BLACK);
+            arduboy.drawPixel(drawX + 1, drawY, BLACK);
+            arduboy.drawPixel(drawX, drawY + 1, BLACK);
         }
     }
 }
@@ -283,9 +346,10 @@ void setLevel(const level_t* chosenLevel) {
     player.y = SCREEN_HEIGHT / 4;
     jumping = false;
     prevJumping = false;
+    prevShooting = false;
     falling = false;
     moving = false;
-    flipSprite = false;
+    flipDirection = false;
     
     // Store level as the start and current position
     level = chosenLevel;
@@ -336,8 +400,9 @@ void draw() {
     arduboy.clear();
     // Draw platforms of level
     drawLevel();
-    // Character sprite
+    // Character sprite and projectiles
     drawPlayer();
+    drawShots();
     arduboy.display();
 }
 
@@ -347,6 +412,7 @@ void loop() {
         return;
     frame = (frame + 1) % FPS;
     updatePlayer();
+    updateShooting();
     draw();
 }
 

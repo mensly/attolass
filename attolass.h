@@ -26,6 +26,12 @@ typedef struct {
     position_t y;
 } position_pair_t;
 
+typedef struct {
+    uint8_t active:1;
+    int8_t  velocity:7;
+    position_pair_t position;
+} shot_t;
+
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
 
