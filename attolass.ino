@@ -396,23 +396,23 @@ void setup() {
     setLevel(res_level_concept);
 }
 
-void draw() {
-    arduboy.clear();
-    // Draw platforms of level
-    drawLevel();
-    // Character sprite and projectiles
-    drawPlayer();
-    drawShots();
-    arduboy.display();
-}
-
 void loop() {
     // pause render until it's time for the next frame
     if (!(arduboy.nextFrame()))
         return;
     frame = (frame + 1) % FPS;
+    arduboy.clear();
+    // Draw platforms of level, needed for collision detection for player etc
+    drawLevel();
+    
     updatePlayer();
     updateShooting();
-    draw();
+    
+    // Character sprite and projectiles
+    drawPlayer();
+    drawShots();
+    
+    // Update screen
+    arduboy.display();
 }
 
