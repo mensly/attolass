@@ -4,8 +4,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2_image/SDL_image.h>
 
-#define MOCK_SCALE 5
-
 #define BLACK 0 //< unlit pixel
 #define WHITE 1 //< lit pixel
 
@@ -73,4 +71,9 @@ private:
     uint8_t eachFrameMillis;
     time_t nextFrameStart;
     std::chrono::high_resolution_clock::time_point startTime;
+    
+    int32_t offsetX;
+    int32_t offsetY;
+    uint8_t scale;
+    void toggleFullscreen();
 };

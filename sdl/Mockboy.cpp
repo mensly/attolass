@@ -7,6 +7,9 @@ Mockboy::Mockboy() {
     buttonsState = 0;
     startTime = std::chrono::high_resolution_clock::now();
     nextFrameStart = 0;
+    offsetX = 0;
+    offsetY = 0;
+    scale = 5;
 }
 
 /// Initialize hardware, boot logo, boot utilities, etc.
@@ -25,7 +28,7 @@ bool Mockboy::initSDL() {
         
         //Create window
         window = SDL_CreateWindow("attolass", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                                   SCREEN_WIDTH * MOCK_SCALE, SCREEN_HEIGHT * MOCK_SCALE, SDL_WINDOW_SHOWN );
+                                   SCREEN_WIDTH * scale, SCREEN_HEIGHT * scale, SDL_WINDOW_SHOWN );
         if (window == NULL) {
             printf("Window could not be created! SDL Error: %s\n", SDL_GetError());
             success = false;
@@ -61,6 +64,31 @@ void Mockboy::close() {
     SDL_Quit();
 }
 
+void Mockboy::toggleFullscreen() {
+    SDL_DestroyRenderer(renderer);
+    SDL_SetWindowFullscreen(window, SDL_GetWindowFlags(window) ^ SDL_WINDOW_FULLSCREEN_DESKTOP);
+    surface = SDL_GetWindowSurface(window);
+    renderer = SDL_CreateSoftwareRenderer(surface);
+    int width, height;
+    SDL_GetWindowSize(window, &width, &height);
+    if (width * SCREEN_HEIGHT < height * SCREEN_WIDTH) {
+        // Scale based on width
+        scale = width / SCREEN_WIDTH;
+        if (scale * SCREEN_WIDTH < width) {
+            scale++;
+        }
+    }
+    else {
+        // Scale based on height
+        scale = height / SCREEN_HEIGHT;
+        if (scale * SCREEN_HEIGHT < height) {
+            scale++;
+        }
+    }
+    offsetX = (width - SCREEN_WIDTH * scale) / 2;
+    offsetY = (height - SCREEN_HEIGHT * scale) / 2;
+}
+
 /// Clears display.
 void Mockboy::clear() {
     SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0x00);
@@ -88,6 +116,15 @@ uint8_t Mockboy::getKeyFlag(SDL_Keycode sdlKeyCode) {
 
 void Mockboy::onKeyDown(SDL_Keycode sdlKeyCode) {
     buttonsState |= getKeyFlag(sdlKeyCode);
+    switch (sdlKeyCode) {
+        case SDLK_RETURN:
+        case SDLK_RETURN2:
+            const uint8_t *state = SDL_GetKeyboardState(NULL);
+            if (state[SDL_SCANCODE_RALT] || state[SDL_SCANCODE_LALT]) {
+                toggleFullscreen();
+            }
+            break;
+    }
 }
 
 void Mockboy::onKeyUp(SDL_Keycode sdlKeyCode) {
@@ -113,7 +150,8 @@ inline void Mockboy::setDrawColor(uint8_t color) {
 
 /// Draws a filled-in rectangle.
 void Mockboy::fillRect(int16_t x, int16_t y, uint8_t w, uint8_t h, uint8_t color) {
-    SDL_Rect fillRect = { x * MOCK_SCALE, y * MOCK_SCALE, w * MOCK_SCALE, h * MOCK_SCALE };
+    SDL_Rect fillRect = { offsetX + x * scale, offsetY + y * scale,
+        w * scale, h * scale };
     setDrawColor(color);
     SDL_RenderFillRect(renderer, &fillRect);
 }
@@ -127,7 +165,8 @@ void Mockboy::drawPixel(int x, int y, uint8_t color) {
 uint8_t Mockboy::getPixel(uint8_t x, uint8_t y) {
     int bpp = surface->format->BytesPerPixel;
     /* Here p is the address to the pixel we want to retrieve */
-    Uint8 *p = (Uint8 *)surface->pixels + (y * MOCK_SCALE) * surface->pitch + (x * MOCK_SCALE) * bpp;
+    Uint8 *p = (Uint8 *)surface->pixels + (offsetY + y * scale) * surface->pitch +
+        (offsetX + x * scale) * bpp;
     Uint32 pixel = 0;
     switch(bpp) {
         case 1:

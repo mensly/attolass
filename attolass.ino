@@ -31,7 +31,7 @@ const uint8_t CHARACTER_SIZE = 8;
 #define MAX_Y_VELOCITY 6
 #define APPLY_Y_VELOCITY (-MAX_Y_VELOCITY)
 const coord_t PLAYER_POSITION_CENTER = (SCREEN_WIDTH - CHARACTER_SIZE) / 2;
-const shot_t POSITION_NULL = {false, 0, {0, 0}};
+const shot_t SHOT_NULL = {false, 0, {0, 0}};
 #define MAX_SHOTS 3
 #define SHOT_VELOCITY 3
 
@@ -45,7 +45,7 @@ position_pair_t player = {      // Position of the player in the level
     PLAYER_POSITION_CENTER,
     SCREEN_HEIGHT / 4 };
 shot_t shots[MAX_SHOTS] = {     // Current positions in the level of shots
-    POSITION_NULL, POSITION_NULL, POSITION_NULL
+    SHOT_NULL, SHOT_NULL, SHOT_NULL
 };
 int8_t yVelocity = 0;           // Current movement up or down
 bool prevJumping = false;       // Previous frame was a jump
@@ -350,6 +350,9 @@ void setLevel(const level_t* chosenLevel) {
     falling = false;
     moving = false;
     flipDirection = false;
+    for (int i = 0; i < MAX_SHOTS; i++) {
+        shots[i].active = false;
+    }
     
     // Store level as the start and current position
     level = chosenLevel;
